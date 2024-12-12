@@ -585,6 +585,131 @@ nmap -sV -v 192.168.1.1
 
 ---
 
+# Identificación del Sistema Operativo con Nmap
+
+## Introducción
+
+La identificación del sistema operativo (OS detection) es una funcionalidad clave de **Nmap** que permite determinar el sistema operativo que está ejecutando un host objetivo. Esto es particularmente útil para obtener un perfil más completo de la infraestructura y detectar posibles vulnerabilidades específicas de un sistema operativo.
+
+Nmap utiliza técnicas avanzadas para analizar las características de los paquetes enviados y las respuestas del objetivo, comparándolos con una base de datos de firmas conocida.
+
+---
+
+## Opciones Principales para la Identificación de Sistemas Operativos
+
+### 1. **Habilitar la Detección de Sistemas Operativos (`-O`)**
+
+Esta opción activa la identificación del sistema operativo del objetivo.
+
+**Comando:**
+```bash
+nmap -O <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -O 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+OS details: Linux 5.4 - 5.8 (Ubuntu)
+```
+
+---
+
+### 2. **Combinar con Escaneo de Versiones (`-sV`)**
+
+La combinación de detección de sistemas operativos y servicios permite obtener un perfil más detallado del objetivo.
+
+**Comando:**
+```bash
+nmap -O -sV <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -O -sV 192.168.1.1
+```
+
+---
+
+### 3. **Técnicas de Huella Digital Activa (`--osscan-guess`)**
+
+Si Nmap no puede identificar el sistema operativo con precisión, esta opción permite realizar suposiciones informadas basadas en características similares.
+
+**Comando:**
+```bash
+nmap -O --osscan-guess <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -O --osscan-guess 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+Aggressive OS guesses: Linux 5.4 (80%)
+```
+
+---
+
+### 4. **Modo Verboso (`-v`)**
+
+Para obtener más detalles sobre el proceso de identificación de sistemas operativos.
+
+**Comando:**
+```bash
+nmap -O -v <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -O -v 192.168.1.1
+```
+
+---
+
+## Interpretación de Resultados
+
+- **`OS details`**: Muestra el sistema operativo identificado y su versión aproximada.
+- **`Aggressive OS guesses`**: Cuando no hay coincidencias exactas, Nmap intenta hacer suposiciones basadas en patrones similares.
+
+---
+
+## Consejos para Mejorar la Detección
+
+1. **Usar Privilegios de Superusuario:** Algunos escaneos requieren acceso root para enviar ciertos tipos de paquetes.
+   ```bash
+   sudo nmap -O <objetivo>
+   ```
+
+2. **Combinar con Escaneo de Red Completo:** Incluye técnicas de descubrimiento de hosts y puertos.
+   ```bash
+   nmap -O -sS -T4 <objetivo>
+   ```
+
+3. **Reducir el Nivel de Velocidad (`-T1`):** Puede ayudar en redes protegidas por firewalls.
+   ```bash
+   nmap -O -T1 <objetivo>
+   ```
+
+---
+
+## Limitaciones
+
+- **Firewalls y Sistemas de Detección de Intrusos:** Pueden bloquear o alterar las respuestas, dificultando la identificación.
+- **Redes Seguras:** Algunas configuraciones avanzadas pueden impedir que Nmap identifique correctamente el sistema operativo.
+
+---
+
+## Consideraciones Legales
+
+Asegúrate de tener autorización antes de realizar un escaneo de sistemas operativos en cualquier red que no te pertenezca.
+
+---
+
 ## Consideraciones Finales
 
 - **Permisos:** Algunos escaneos requieren permisos de superusuario para ejecutarse correctamente.
