@@ -447,6 +447,144 @@ Este estado indica que Nmap no puede determinar si un puerto está cerrado o fil
 
 ---
 
+## Opciones Principales para Descubrimiento de Servicios
+
+El descubrimiento de servicios es una etapa crucial para identificar qué aplicaciones o procesos están escuchando en puertos específicos de un sistema objetivo. Con **Nmap**, podemos obtener información detallada sobre los servicios que se ejecutan en los puertos abiertos y, en muchos casos, identificar su versión.
+
+---
+
+### 1. **Detección de Servicios y Versiones (`-sV`):**
+
+Esta opción permite identificar servicios y sus versiones en puertos abiertos. Nmap envía una serie de peticiones específicas para analizar las respuestas y deducir el servicio.
+
+**Comando:**
+```bash
+nmap -sV <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+PORT    STATE SERVICE VERSION
+22/tcp  open  ssh     OpenSSH 8.2
+80/tcp  open  http    Apache httpd 2.4.41
+```
+
+---
+
+### 2. **Detección Intensa de Servicios (`--version-intensity`):**
+
+Controla el nivel de intensidad del escaneo de servicios. Por defecto, se usa un nivel de 7 (máximo). Puedes reducirlo para acelerar el proceso.
+
+**Comando:**
+```bash
+nmap -sV --version-intensity <nivel> <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV --version-intensity 5 192.168.1.1
+```
+
+---
+
+### 3. **Forzar Protocolos Específicos (`--version-light` y `--version-all`):**
+
+- **`--version-light`**: Realiza una detección más rápida y ligera.
+- **`--version-all`**: Intenta identificar servicios en todos los puertos detectados, sin restricciones.
+
+**Comandos:**
+```bash
+nmap -sV --version-light <objetivo>
+```
+```bash
+nmap -sV --version-all <objetivo>
+```
+
+---
+
+### 4. **Detección de Scripts (`-sC` o `--script`):**
+
+Utiliza scripts NSE (Nmap Scripting Engine) para obtener información adicional sobre los servicios descubiertos.
+
+**Comando:**
+```bash
+nmap -sC <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV -sC 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+PORT    STATE SERVICE VERSION
+80/tcp  open  http    Apache httpd 2.4.41
+| http-title: Welcome to Apache!
+| http-methods: GET POST OPTIONS
+```
+
+---
+
+### 5. **Especificar Puertos para el Escaneo (`-p`):**
+
+Si quieres enfocar el descubrimiento de servicios en puertos específicos, usa la opción `-p`.
+
+**Comando:**
+```bash
+nmap -sV -p <puertos> <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV -p 22,80,443 192.168.1.1
+```
+
+---
+
+## Combinación con Otras Opciones
+
+### Combinar con Detección de Sistemas Operativos (`-O`):
+Puedes combinar la detección de servicios con la identificación del sistema operativo para obtener un perfil más completo del objetivo.
+
+**Comando:**
+```bash
+nmap -sV -O <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV -O 192.168.1.1
+```
+
+### Escaneo en Modo Verboso (`-v`):
+Para obtener más detalles durante el proceso de escaneo.
+
+**Comando:**
+```bash
+nmap -sV -v <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap -sV -v 192.168.1.1
+```
+
+---
+
+## Interpretación de Resultados
+
+- **SERVICE:** Indica el servicio en ejecución (e.g., HTTP, SSH).
+- **VERSION:** Proporciona la versión detectada del servicio.
+- **SCRIPTS:** Salida adicional proporcionada por los scripts NSE.
+
+---
+
 ## Consideraciones Finales
 
 - **Permisos:** Algunos escaneos requieren permisos de superusuario para ejecutarse correctamente.
