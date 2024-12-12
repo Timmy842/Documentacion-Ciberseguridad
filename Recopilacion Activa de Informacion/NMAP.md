@@ -874,6 +874,176 @@ Asegúrate de contar con la debida autorización antes de realizar escaneos SMB 
 
 ---
 
+# Enumeración de SNMP con Nmap
+
+## Introducción
+
+El Protocolo Simple de Gestión de Red (**SNMP**, por sus siglas en inglés) es utilizado para monitorear y administrar dispositivos de red. La enumeración de SNMP permite recopilar información importante como nombres de dispositivos, tablas ARP, configuraciones de red, e incluso contraseñas si el protocolo está mal configurado.
+
+Con **Nmap**, puedes utilizar scripts NSE para realizar una enumeración eficaz de SNMP.
+
+---
+
+## Scripts de Nmap para Enumeración de SNMP
+
+### 1. **Detección de Servicios SNMP (`snmp-info`)**
+
+Este script recopila información general sobre el dispositivo y su configuración SNMP.
+
+**Comando:**
+```bash
+nmap --script snmp-info -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script snmp-info -p 161 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+161/udp open  snmp
+| snmp-info: 
+|   enterprise: Cisco Systems 
+|   version: 2c 
+|_  contact: admin@example.com
+```
+
+---
+
+### 2. **Enumeración de Tablas SNMP (`snmp-walk`)**
+
+Este script realiza una consulta de tipo *walk* en el dispositivo SNMP y lista información relevante.
+
+**Comando:**
+```bash
+nmap --script snmp-walk -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script snmp-walk -p 161 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+161/udp open  snmp
+| snmp-walk: 
+|   sysName.0: Router01
+|   sysUpTime.0: 15 days, 3:42:17.34
+|   sysContact.0: admin@example.com
+|_  sysLocation.0: Data Center A
+```
+
+---
+
+### 3. **Enumeración de Cadenas de Comunidad (`snmp-brute`)**
+
+Este script intenta identificar cadenas de comunidad SNMP mediante un ataque de fuerza bruta.
+
+**Comando:**
+```bash
+nmap --script snmp-brute -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script snmp-brute -p 161 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+161/udp open  snmp
+| snmp-brute: 
+|   public - read-only 
+|_  private - read-write
+```
+
+---
+
+### 4. **Consulta de Árboles OID (`snmp-oid`)**
+
+Este script recupera información de árboles OID específicos en el dispositivo objetivo.
+
+**Comando:**
+```bash
+nmap --script snmp-oid -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script snmp-oid -p 161 192.168.1.1
+```
+
+---
+
+### 5. **Identificación de Configuraciones Vulnerables (`snmp-netstat`)**
+
+Consulta la tabla de rutas y las conexiones activas del dispositivo.
+
+**Comando:**
+```bash
+nmap --script snmp-netstat -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script snmp-netstat -p 161 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+161/udp open  snmp
+| snmp-netstat: 
+|   Interface: eth0 
+|     IP: 192.168.1.1/24 
+|     MTU: 1500 
+|_  Routes: 192.168.1.0/24 via 192.168.1.254
+```
+
+---
+
+## Combinaciones de Scripts
+
+Puedes combinar múltiples scripts para realizar una enumeración completa de SNMP.
+
+**Comando:**
+```bash
+nmap --script "snmp-*" -p 161 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script "snmp-info,snmp-walk,snmp-brute" -p 161 192.168.1.1
+```
+
+---
+
+## Consejos para Mejorar la Enumeración
+
+1. **Especificar Comunidad SNMP:** Si conoces la cadena de comunidad, úsala con la opción `--script-args`.
+   ```bash
+   nmap --script snmp-info --script-args snmpcommunity=<comunidad> -p 161 <objetivo>
+   ```
+
+2. **Usar Escaneo Verboso (`-v`):** Obtén más detalles durante el escaneo.
+   ```bash
+   nmap --script snmp-walk -v -p 161 192.168.1.1
+   ```
+
+3. **Ejecutar con Privilegios:** Algunos scripts requieren permisos elevados (sudo).
+   ```bash
+   sudo nmap --script snmp-netstat -p 161 192.168.1.1
+   ```
+
+---
+
+## Consideraciones Legales
+
+Asegúrate de contar con la autorización necesaria antes de realizar escaneos SNMP en redes externas o de terceros. 
+
+---
+
 ## Consideraciones Finales
 
 - **Permisos:** Algunos escaneos requieren permisos de superusuario para ejecutarse correctamente.
