@@ -710,6 +710,170 @@ Asegúrate de tener autorización antes de realizar un escaneo de sistemas opera
 
 ---
 
+# Enumeración de SMB con Nmap
+
+## Introducción
+
+La enumeración de SMB (Server Message Block) permite recopilar información sobre recursos compartidos, usuarios y configuraciones en sistemas que utilizan este protocolo. Con **Nmap** y su potente motor de scripts (NSE), podemos identificar y analizar servicios SMB en sistemas objetivos de manera eficiente.
+
+---
+
+## Scripts de Nmap para SMB
+
+### 1. **Detección de Servicios SMB (`smb-protocols`)**
+Este script identifica las versiones de SMB soportadas por el sistema objetivo (SMBv1, SMBv2, SMBv3).
+
+**Comando:**
+```bash
+nmap --script smb-protocols -p 445 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script smb-protocols -p 445 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+445/tcp open  microsoft-ds
+| smb-protocols: 
+|   dialects: 
+|     2.02 
+|     2.10 
+|     3.00 
+|_    3.11
+```
+
+---
+
+### 2. **Enumeración de Recursos Compartidos (`smb-enum-shares`)**
+Este script lista los recursos compartidos en el servidor SMB, como carpetas públicas o protegidas.
+
+**Comando:**
+```bash
+nmap --script smb-enum-shares -p 445 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script smb-enum-shares -p 445 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+445/tcp open  microsoft-ds
+| smb-enum-shares: 
+|   account_used: guest
+|   \Public 
+|     Type: Disk 
+|     Comment: Public Folder
+|_  \IPC$ 
+```
+
+---
+
+### 3. **Enumeración de Usuarios (`smb-enum-users`)**
+Este script enumera usuarios en el servidor SMB objetivo.
+
+**Comando:**
+```bash
+nmap --script smb-enum-users -p 445 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script smb-enum-users -p 445 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+445/tcp open  microsoft-ds
+| smb-enum-users: 
+|   DOMAIN\user1 
+|   DOMAIN\user2 
+|_  DOMAIN\admin
+```
+
+---
+
+### 4. **Detección de Vulnerabilidades SMB**
+
+#### **Verificación de EternalBlue (`smb-vuln-ms17-010`)**
+Este script verifica si el sistema es vulnerable al exploit EternalBlue (MS17-010).
+
+**Comando:**
+```bash
+nmap --script smb-vuln-ms17-010 -p 445 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script smb-vuln-ms17-010 -p 445 192.168.1.1
+```
+
+**Salida típica:**
+```bash
+445/tcp open  microsoft-ds
+| smb-vuln-ms17-010: 
+|   VULNERABLE: 
+|   Remote Code Execution vulnerability in Microsoft SMBv1
+|_  Risk Factor: Critical
+```
+
+#### **Otros Scripts de Vulnerabilidad**
+- `smb-vuln-cve-2020-0796`: SMBv3 Compresión.
+- `smb-vuln-ms08-067`: Ejecución remota en SMBv1.
+
+**Comando General:**
+```bash
+nmap --script <nombre_del_script> -p 445 <objetivo>
+```
+
+---
+
+## Comandos Combinados
+
+Para ejecutar múltiples scripts en un solo comando:
+
+**Comando:**
+```bash
+nmap --script "smb-*" -p 445 <objetivo>
+```
+
+**Ejemplo:**
+```bash
+nmap --script "smb-enum-shares,smb-enum-users,smb-vuln-ms17-010" -p 445 192.168.1.1
+```
+
+---
+
+## Consejos para Mejorar la Enumeración
+
+1. **Usar Escaneo Verboso (`-v`):**
+   Proporciona más detalles sobre el progreso del escaneo.
+   ```bash
+   nmap --script smb-enum-shares -v -p 445 192.168.1.1
+   ```
+
+2. **Elevar Privilegios (sudo):** Algunos scripts requieren permisos de superusuario.
+   ```bash
+   sudo nmap --script smb-enum-users -p 445 192.168.1.1
+   ```
+
+3. **Combinar con Escaneos Generales:**
+   Integra descubrimiento de servicios y sistemas operativos para obtener más contexto.
+   ```bash
+   nmap -sV -O --script smb-enum-shares -p 445 192.168.1.1
+   ```
+
+---
+
+## Consideraciones Legales
+
+Asegúrate de contar con la debida autorización antes de realizar escaneos SMB en redes externas o de terceros. 
+
+---
+
 ## Consideraciones Finales
 
 - **Permisos:** Algunos escaneos requieren permisos de superusuario para ejecutarse correctamente.
