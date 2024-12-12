@@ -149,6 +149,304 @@ nmap -sn -oX resultados.xml 192.168.1.0/24
 
 ---
 
+## Descubrimiento de Puertos con Nmap
+
+El descubrimiento de puertos es una etapa fundamental en el análisis de redes y sistemas. Con **Nmap**, podemos identificar puertos abiertos y servicios activos en un host o red. Esto nos proporciona información clave para evaluar el estado de seguridad de un sistema.
+
+---
+
+## Escaneos Comunes de Puertos
+
+### Escaneo TCP SYN (`-sS`)
+Es el escaneo más rápido y común. Envia un paquete TCP SYN para determinar el estado de un puerto (abierto, cerrado o filtrado).
+
+**Comando:**
+```bash
+nmap -sS <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -sS 192.168.1.1
+```
+
+---
+
+### Escaneo TCP Connect (`-sT`)
+Realiza una conexión completa al puerto objetivo. Es más lento y detectable que el escaneo SYN.
+
+**Comando:**
+```bash
+nmap -sT <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -sT 192.168.1.1
+```
+
+---
+
+### Escaneo UDP (`-sU`)
+Explora puertos UDP en busca de servicios activos. Este tipo de escaneo puede ser más lento debido a la naturaleza del protocolo UDP.
+
+**Comando:**
+```bash
+nmap -sU <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -sU 192.168.1.1
+```
+
+---
+
+### Escaneo de Puertos Específicos
+Puedes especificar qué puertos escanear con la opción `-p`.
+
+**Comando:**
+```bash
+nmap -p <puertos> <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -p 22,80,443 192.168.1.1
+```
+Para escanear todos los puertos (1-65535):
+```bash
+nmap -p- <objetivo>
+```
+
+---
+
+### Escaneo de Puertos Comúnmente Usados
+El escaneo por defecto en Nmap cubre los 1,000 puertos más comunes. Puedes forzar este comportamiento con:
+
+**Comando:**
+```bash
+nmap --top-ports 1000 <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap --top-ports 1000 192.168.1.1
+```
+
+---
+
+## Opciones Avanzadas
+
+### Detectar Servicios y Versiones (`-sV`)
+Identifica servicios y versiones en los puertos abiertos.
+
+**Comando:**
+```bash
+nmap -sV <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -sV 192.168.1.1
+```
+
+---
+
+### Escaneo Silencioso (`-T0` o `-T1`)
+Para minimizar la detección en sistemas con medidas de seguridad, usa configuraciones lentas.
+
+**Comando:**
+```bash
+nmap -T1 <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -T1 192.168.1.1
+```
+
+---
+
+### Evitar Resolución DNS (`-n`)
+Para evitar la resolución inversa de nombres de dominio, utiliza la opción `-n`.
+
+**Comando:**
+```bash
+nmap -n <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -n 192.168.1.1
+```
+
+---
+
+### Detección de Sistemas Operativos (`-O`)
+Este escaneo intenta identificar el sistema operativo del objetivo.
+
+**Comando:**
+```bash
+nmap -O <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -O 192.168.1.1
+```
+
+---
+
+## Guardar Resultados
+
+### Guardar en Archivo de Texto
+**Comando:**
+```bash
+nmap -oN <archivo_salida> <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -oN resultados.txt 192.168.1.1
+```
+
+### Guardar en Formato XML
+**Comando:**
+```bash
+nmap -oX <archivo_salida> <objetivo>
+```
+**Ejemplo:**
+```bash
+nmap -oX resultados.xml 192.168.1.1
+```
+
+---
+
+## Estados de los Puertos con Nmap
+
+Cuando realizamos un escaneo con Nmap, los puertos de los objetivos analizados pueden reportarse en diferentes estados. Estos estados son clave para entender el comportamiento de los servicios y la configuración del sistema objetivo.
+
+Esta guía describe los posibles estados de los puertos que Nmap puede identificar y su significado.
+
+---
+
+## Estados de los Puertos
+
+### 1. **Abierto (Open)**
+
+Un puerto se considera **abierto** si está aceptando conexiones activas. Esto indica que hay un servicio en escucha en ese puerto.
+
+- **Significado:**
+  - Hay un servicio o aplicación que puede interactuar con los clientes.
+  - Este es el estado más relevante para el análisis de servicios y vulnerabilidades.
+
+- **Ejemplo de salida en Nmap:**
+  ```bash
+  PORT    STATE SERVICE
+  80/tcp  open  http
+  ```
+
+---
+
+### 2. **Cerrado (Closed)**
+
+Un puerto está **cerrado** si no hay ningún servicio en escucha en él, pero el puerto es accesible y responde a los paquetes enviados.
+
+- **Significado:**
+  - Aunque no hay servicios activos, el puerto puede convertirse en un objetivo si un servicio se habilita posteriormente.
+  - Es útil para evaluar políticas de firewall y medidas de seguridad.
+
+- **Ejemplo de salida en Nmap:**
+  ```bash
+  PORT    STATE SERVICE
+  22/tcp  closed ssh
+  ```
+
+---
+
+### 3. **Filtrado (Filtered)**
+
+Un puerto se clasifica como **filtrado** cuando los paquetes enviados no pueden determinar si el puerto está abierto o cerrado, generalmente debido a un firewall que bloquea los paquetes.
+
+- **Significado:**
+  - La comunicación directa con el puerto está restringida.
+  - Puede indicar la presencia de un firewall o dispositivo de seguridad en la red.
+
+- **Ejemplo de salida en Nmap:**
+  ```bash
+  PORT    STATE SERVICE
+  25/tcp  filtered smtp
+  ```
+
+---
+
+### 4. **No Filtrado (Unfiltered)**
+
+Un puerto está **no filtrado** si Nmap puede acceder a él, pero no puede determinar si está abierto o cerrado.
+
+- **Significado:**
+  - Es menos común y generalmente requiere escaneos adicionales para obtener más información.
+
+- **Ejemplo de salida en Nmap:**
+  ```bash
+  PORT    STATE SERVICE
+  53/tcp  unfiltered domain
+  ```
+
+---
+
+### 5. **Indeterminado (Open|Filtered)**
+
+Un puerto aparece como **Open|Filtered** cuando Nmap no puede determinar si el puerto está abierto o filtrado.
+
+- **Significado:**
+  - Ocurre típicamente en escaneos UDP o en sistemas protegidos por firewalls.
+  - Puede requerir técnicas adicionales para clarificar el estado real.
+
+- **Ejemplo de salida en Nmap:**
+  ```bash
+  PORT    STATE SERVICE
+  123/udp open|filtered ntp
+  ```
+
+---
+
+### 6. **Cerrado|Filtrado (Closed|Filtered)**
+
+Este estado indica que Nmap no puede determinar si un puerto está cerrado o filtrado.
+
+- **Significado:**
+  - Es menos común y generalmente ocurre en redes con políticas de seguridad avanzadas.
+
+---
+
+## Relevancia de los Estados de Puertos
+
+- **Abierto:** Identifica posibles puntos de entrada y servicios activos.
+- **Cerrado:** Indica accesibilidad, aunque sin servicios activos.
+- **Filtrado:** Destaca posibles barreras de seguridad como firewalls.
+- **Open|Filtered:** Sugiere necesidad de técnicas avanzadas para clarificación.
+
+---
+
+## Consejos para Analizar Estados de Puertos
+
+1. **Escaneo de Versiones (`-sV`):** Ayuda a identificar servicios específicos en puertos abiertos.
+   ```bash
+   nmap -sV <objetivo>
+   ```
+
+2. **Escaneo UDP (`-sU`):** Para verificar estados de puertos UDP, donde Open|Filtered es común.
+   ```bash
+   nmap -sU <objetivo>
+   ```
+
+3. **Escaneo Intensivo (`-T4`):** Aumenta la velocidad del escaneo para obtener resultados más rápidos.
+   ```bash
+   nmap -T4 <objetivo>
+   ```
+
+---
+
+## Consideraciones Finales
+
+- Los estados de puertos ayudan a entender la arquitectura y seguridad de una red.
+- Usa herramientas adicionales como firewalls o IDS para confirmar resultados obtenidos por Nmap.
+- Realiza siempre escaneos con autorización.
+
+---
+
 ## Consideraciones Finales
 
 - **Permisos:** Algunos escaneos requieren permisos de superusuario para ejecutarse correctamente.
